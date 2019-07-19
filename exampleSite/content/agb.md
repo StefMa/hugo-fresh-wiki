@@ -1,5 +1,7 @@
 ---
 title: AGB
+sidebar: true
+sidebarlogo: fresh-white-alt
 ---
 
 {{% title3 "§1 Lorem" %}}
