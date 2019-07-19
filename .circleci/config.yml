@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: alpine:3.9.2
+      - image: alpine:3.10.1
 
     steps:
       - run:
@@ -18,9 +18,9 @@ jobs:
           working_directory: my-site
           command: |
             apk add git
-            git clone https://github.com/StefMa/hugo-fresh themes/hugo-fresh
+            git clone https://github.com/StefMa/hugo-fresh-wiki themes/hugo-fresh-wiki
       - run:
-          working_directory: my-site/themes/hugo-fresh
+          working_directory: my-site/themes/hugo-fresh-wiki
           command: |
             if [[ ${CIRCLE_BRANCH} == "*pull*" ]]; then
               git fetch origin ${CIRCLE_BRANCH}/head:BRANCHNAME
@@ -41,15 +41,15 @@ jobs:
             fi
             rm config.toml
             apk add curl
-            curl https://codeload.github.com/stefma/hugo-fresh/tar.gz/$branch | tar -xz --strip=2 hugo-fresh-$branch/exampleSite/
+            curl https://codeload.github.com/stefma/hugo-fresh-wiki/tar.gz/$branch | tar -xz --strip=2 hugo-fresh-wiki-$branch/exampleSite/
       - run:
           name: Replace baseUrl in config
           working_directory: my-site
           command: |
             apk add sed
-            URL=hugo-fresh-$(echo $CIRCLE_BRANCH | tr _ -)
-            if [ $CIRCLE_BRANCH == "master" ]; then
-              URL=hugo-fresh
+            URL=hugo-fresh-wiki-$(echo $CIRCLE_BRANCH | tr _ -)
+            if [ $CIRCLE_BRANCH == "wiki" ]; then
+              URL=hugo-fresh-wiki
             fi
             sed -i "s,http://something-fresh.org,https://${URL}.now.sh,g" config.yaml
             cat config.yaml
@@ -63,17 +63,17 @@ jobs:
           name: Create now.json
           working_directory: my-site/public
           command: |
-            URL=hugo-fresh-$(echo $CIRCLE_BRANCH | tr _ -)
-            if [ $CIRCLE_BRANCH == "master" ]; then
-              URL=hugo-fresh
+            URL=hugo-fresh-wiki-$(echo $CIRCLE_BRANCH | tr _ -)
+            if [ $CIRCLE_BRANCH == "wiki" ]; then
+              URL=hugo-fresh-wiki
             fi
-            echo "{ \"version\": 2, \"name\": \"hugo-fresh\", \"alias\": \"${URL}\", \"builds\": [{ \"src\": \"**\", \"use\": \"@now/static\" }] }" >> now.json
+            echo "{ \"version\": 2, \"name\": \"hugo-fresh-wiki\", \"alias\": \"${URL}\", \"builds\": [{ \"src\": \"**\", \"use\": \"@now/static\" }] }" >> now.json
 
       - run:
           name: Install now CLI
           command: |
             apk add wget
-            wget -q https://github.com/zeit/now-cli/releases/download/15.4.0/now-alpine.gz
+            wget -q https://github.com/zeit/now-cli/releases/download/15.8.3/now-alpine.gz
             apk add gzip
             gunzip now-alpine.gz
             chmod a+x now-alpine
